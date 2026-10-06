@@ -86,6 +86,7 @@
       height: 740px;
       max-height: 92vh;
       margin: auto;
+      position: relative;
     }
 
     /* ESCALADO ESPECIAL PARA MONITORES 2K / ALTAS RESOLUCIONES (27" 1440p) */
@@ -123,6 +124,7 @@
       align-items: center;
       gap: 4px;
       flex-shrink: 0;
+      position: relative;
     }
 
     .titulo-mes-container {
@@ -178,6 +180,102 @@
       justify-content: center;
       gap: 6px;
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ESTILOS EASTER EGG (STICKER ABAJO A LA IZQUIERDA Y BOCADILLO) */
+    .easter-egg-container {
+      position: fixed;
+      bottom: -30px;
+      left: 10px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      font-family: 'Fredoka', cursive, sans-serif;
+      opacity: 0;
+      transform: scale(0.2) translateY(80px);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .easter-egg-container.activo {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      animation: popCartoon 0.5s ease-out;
+    }
+
+    /* Bocadillo de texto */
+    .bocadillo-mensaje {
+      background: #ffffff;
+      color: #222f47;
+      border: 3px solid var(--autumn-stroke);
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      max-width: 230px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      text-align: left;
+    }
+
+    /* Flecha interior del bocadillo (blanca) */
+    .bocadillo-mensaje::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 35px;
+      border-width: 12px 10px 0;
+      border-style: solid;
+      border-color: #ffffff transparent;
+      display: block;
+      width: 0;
+      z-index: 1;
+    }
+
+    /* Flecha exterior del bocadillo (borde) */
+    .bocadillo-mensaje::before {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 33px;
+      border-width: 14px 12px 0;
+      border-style: solid;
+      border-color: var(--autumn-stroke) transparent;
+      display: block;
+      width: 0;
+      z-index: 0;
+    }
+
+    /* Imagen del Sticker */
+    .sticker-img {
+      width: 180px;
+      height: auto;
+      filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.3));
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .sticker-img:hover {
+      transform: scale(1.08) rotate(-3deg);
+    }
+
+    /* Animación estilo dibujo animado */
+    @keyframes popCartoon {
+      0% {
+        opacity: 0;
+        transform: scale(0.2) translateY(80px) rotate(-10deg);
+      }
+      70% {
+        transform: scale(1.1) translateY(-10px) rotate(3deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0deg);
+      }
     }
 
     /* GRID ADAPTATIVO */
@@ -351,7 +449,6 @@
       flex-shrink: 0;
     }
 
-    /* CONTENEDOR BLOQUE CENTRAL CENTRADO */
     .bloque-central-hoy {
       display: flex;
       flex-direction: column;
@@ -512,6 +609,14 @@
         width: 100%;
         height: auto;
       }
+      .sticker-img {
+        width: 130px;
+      }
+      .bocadillo-mensaje {
+        max-width: 170px;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+      }
     }
   </style>
 </head>
@@ -578,10 +683,18 @@
     </div>
   </div>
 
+  <!-- EASTER EGG (STICKER Y BOCADILLO EN LA ESQUINA INFERIOR IZQUIERDA) -->
+  <div class="easter-egg-container" id="easter-egg">
+    <div class="bocadillo-mensaje">
+      ¡Gracias por usar el calendario! Está hecho por Tropikrown con mucho mimo para los heartopianos
+    </div>
+    <img src="https://imgur.com/r0C8Nvc.png" alt="Sticker Tropikrown" class="sticker-img" id="sticker-img">
+  </div>
+
   <script>
     const MODO_AUTOMATICO = true; 
-    const MES_MANUAL = 5; 
-    const ANO_MANUAL = 2027; 
+    const MES_MANUAL = 10; 
+    const ANO_MANUAL = 2026; 
 
     /* MAPAS DE TRAZADO SVG EXACTOS DE REACT-ICONS / GAME ICONS (GI) */
     const SVG_FOREST = `<svg viewBox="0 0 512 512"><path d="M381.16 312.9c13.79-11.83 26.58-25.04 36.31-40.45 6.07 1.83 12.39 2.87 18.8 2.87 34.61 0 63.26-25.75 67.24-59.21C510.63 178.6 480 148 442.49 148c-3.14 0-6.22.23-9.25.68C419.04 88.08 365.18 44 300.4 44c-35.03 0-66.86 12.98-91.17 34.37-14.73-10.96-32.96-17.53-52.74-17.53-48.51 0-87.84 39.33-87.84 87.84 0 5.48.51 10.83 1.48 16.03C28.53 176.6 0 211.96 0 254.49 0 304.38 39.31 345 88.8 345c6.51 0 12.87-.71 19-2.03V468h48.8V336.88c9.64.72 19.43 1.12 29.4 1.12 18.23 0 35.85-1.39 52.6-3.99V468h48.8V328.61c31.13-7.53 58.7-22.18 80.2-42.38V468h48.8V313.25c-12.02.23-23.77.1-35.24-.35zM128 300h-32v-80h32v80zm128 0h-32V180h32v120zm128 0h-32V220h32v80z"/></svg>`;
@@ -674,6 +787,21 @@
     document.getElementById("icono-ano-izq").className = `ti ${iconoClase}`;
     document.getElementById("icono-ano-der").className = `ti ${iconoClase}`;
 
+    /* LÓGICA DEL EASTER EGG (MOSTRAR/OCULTAR Y CERRAR AL HACER CLIC EN EL STICKER) */
+    const btnTituloMes = document.getElementById("btn-easter-egg");
+    const containerEasterEgg = document.getElementById("easter-egg");
+    const stickerImg = document.getElementById("sticker-img");
+
+    // Muestra u oculta el easter egg al pulsar el título del mes
+    btnTituloMes.addEventListener("click", () => {
+      containerEasterEgg.classList.toggle("activo");
+    });
+
+    // Cierra el conjunto al hacer clic en la imagen del sticker
+    stickerImg.addEventListener("click", () => {
+      containerEasterEgg.classList.remove("activo");
+    });
+
     function actualizarPanelHoy(diaNum, infoDia, claveStorage, estadoGuardado) {
       document.getElementById("hoy-numero").textContent = diaNum;
       
@@ -721,7 +849,6 @@
       const totalCasillas = offset + totalDias;
       const numFilas = Math.ceil(totalCasillas / 7);
       
-      /* AJUSTE DINÁMICO DE FILAS PARA CALCULAR EL TAMAÑO CORRECTO */
       document.documentElement.style.setProperty('--filas-mes', numFilas);
 
       for (let i = 0; i < offset; i++) {

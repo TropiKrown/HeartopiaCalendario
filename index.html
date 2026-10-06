@@ -3,19 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendario Anual</title>
+  <title>Calendario Anual Proporcionado</title>
   
-  <!-- Fuente Fredoka de Google Fonts -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
   </style>
-
-  <!-- Librería de Iconos de Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
   <style>
     :root {
-      /* Variables dinámicas por mes */
       --bg-imagen-mes: url('https://imgur.com/6taBAnv.png');
 
       --bg-today: #2d5e94;
@@ -41,17 +37,27 @@
       --bg-body-fallback: #6395cd;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
     body { 
       font-family: 'Fredoka', cursive, sans-serif; 
       color: var(--text-color);
-      max-width: 1100px; 
-      margin: 20px auto; 
-      padding: 20px 15px; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
       background-color: var(--bg-body-fallback);
     }
 
-    /* CAPA DE FONDO CON BLUR Y DINÁMICA POR MES */
     body::before {
       content: "";
       position: fixed;
@@ -60,42 +66,68 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      
       background-image: var(--bg-imagen-mes);
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center center;
-      background-attachment: fixed;
-      
       filter: blur(1px);
       transform: scale(1.05);
     }
 
-    /* TARJETA PRINCIPAL CON EFECTO VIDRIO */
+    /* CONTENEDOR GLOBAL PROPORCIONADO */
+    .layout-global {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      
+      width: 1240px;
+      max-width: 95vw;
+      height: 740px;
+      max-height: 92vh;
+      margin: auto;
+    }
+
+    /* ESCALADO ESPECIAL PARA MONITORES 2K / ALTAS RESOLUCIONES (27" 1440p) */
+    @media (min-height: 1200px), (min-width: 2200px) {
+      .layout-global {
+        width: 1550px;
+        height: 920px;
+      }
+    }
+
+    /* SECCIÓN DEL CALENDARIO */
     .contenedor-principal {
       background: rgba(255, 255, 255, 0.35);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border-radius: 24px;
-      padding: 25px;
+      border-radius: 20px;
+      padding: 16px 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.4);
+      
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      height: 100%;
+      min-width: 0;
     }
 
     /* ENCABEZADO */
     .header-titulo {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
-    /* TITULO DEL MES RECONSTRUIDO CON PROPORCIÓN EXACTA */
     .titulo-mes-container {
       position: relative;
       display: inline-block;
-      margin-bottom: 10px;
       cursor: pointer;
       user-select: none;
       transition: transform 0.2s ease;
@@ -105,18 +137,13 @@
       transform: scale(1.03);
     }
 
-    .titulo-mes-container:active {
-      transform: scale(0.98);
-    }
-
     .titulo-mes-borde {
-      font-size: clamp(2.5rem, 9vw, 4rem);
+      font-size: clamp(2.2rem, 3.8vw, 3.2rem);
       font-weight: 700;
       color: var(--autumn-stroke);
-      /* Uso de unidad em para que el borde escale siempre idéntico al texto */
-      -webkit-text-stroke: 0.22em var(--autumn-stroke);
+      -webkit-text-stroke: 0.18em var(--autumn-stroke);
       text-transform: capitalize;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       margin: 0;
       line-height: 1.1;
       paint-order: stroke fill;
@@ -127,10 +154,10 @@
       top: 0;
       left: 0;
       width: 100%;
-      font-size: clamp(2.5rem, 9vw, 4rem);
+      font-size: clamp(2.2rem, 3.8vw, 3.2rem);
       font-weight: 700;
       text-transform: capitalize;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       margin: 0;
       line-height: 1.1;
       background: linear-gradient(180deg, var(--autumn-grad-top) 25%, var(--autumn-grad-bottom) 100%);
@@ -139,60 +166,58 @@
       pointer-events: none;
     }
 
-    /* PÍLDORA DEL AÑO */
     .pildora-ano {
       background-color: var(--autumn-pill-bg);
       color: #ffffff;
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      padding: 6px 24px;
+      padding: 2px 14px;
       border-radius: 50px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      letter-spacing: 1px;
+      gap: 6px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .pildora-ano i {
-      font-size: 1.2rem;
-      line-height: 1;
-    }
-
+    /* GRID ADAPTATIVO */
     .grid-calendario {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 10px;
+      grid-template-rows: auto repeat(var(--filas-mes, 5), 1fr);
+      gap: 6px;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
     }
 
     .header-dias { 
-      font-weight: 600; 
+      font-weight: 700; 
       text-align: center; 
       background: var(--header-dias-bg); 
-      padding: 10px; 
-      border-radius: 12px;
-      font-size: 18px;
+      padding: 6px 2px; 
+      border-radius: 8px;
+      font-size: 0.95rem;
       color: var(--header-dias-text);
       box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .casilla-dia {
-      border: 2px solid var(--border-color);
-      border-radius: 14px;
-      padding: 8px;
-      min-height: 135px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 4px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       background: var(--casilla-bg);
-      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .casilla-dia:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      transition: transform 0.2s ease;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
     }
 
     .vacia { 
@@ -204,6 +229,7 @@
     .hoy { 
       background-color: var(--bg-today); 
       border-color: #ffda85; 
+      box-shadow: 0 0 12px rgba(255, 218, 133, 0.7);
     }
 
     .hoy .num-dia {
@@ -214,39 +240,51 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       width: 100%;
+      flex: 1;
+      min-height: 0;
+      position: relative;
     }
 
     .num-dia { 
       font-weight: 700; 
-      font-size: 25px;
-      align-self: flex-start; 
-      margin-bottom: 4px;
+      font-size: 1.1rem; 
+      line-height: 1;
       color: var(--text-color);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.12);
+      position: absolute;
+      top: 1px;
+      left: 3px;
+      z-index: 2;
     }
     
     .img-dia { 
-      width: 100%; 
-      height: auto; 
-      display: block;
+      width: 100%;
+      height: 100%;
       object-fit: contain; 
+      display: block;
+      margin: 0 auto;
+      min-height: 0;
+      padding-top: 6px;
     }
     
     .marcas-grid { 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
-      gap: 6px; 
-      margin-top: 6px; 
+      gap: 4px; 
       width: 100%;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
     .caja-btn { 
       background-color: var(--btn-bg);
       border: 1.5px solid var(--btn-border);
-      border-radius: 8px;
-      padding: 4px 2px;
-      font-size: 17px; 
-      font-weight: 600;
+      border-radius: 6px;
+      padding: 2px 2px;
+      font-size: 0.9rem; 
+      font-weight: 700;
       text-align: center;
       cursor: pointer;
       user-select: none;
@@ -255,6 +293,17 @@
       overflow: hidden;
       text-overflow: ellipsis;
       color: var(--text-color);
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+    }
+
+    .caja-btn svg {
+      width: 1.15em;
+      height: 1.15em;
+      fill: currentColor;
     }
 
     .caja-btn:hover {
@@ -269,239 +318,280 @@
       text-decoration: line-through; 
     }
 
-    .footer-info {
-      margin-top: 20px;
+    /* PANEL DERECHO "HOY" Y LEYENDA */
+    .panel-dia-actual {
+      width: 240px;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      height: 100%;
+    }
+
+    .titulo-panel-hoy {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--header-dias-bg);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 50px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      width: 100%;
       text-align: center;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-color);
+      flex-shrink: 0;
+    }
+
+    /* CONTENEDOR BLOQUE CENTRAL CENTRADO */
+    .bloque-central-hoy {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      opacity: 0.9;
+      gap: 12px;
+      width: 100%;
+      flex: 1;
     }
 
-    .footer-linea-principal {
+    .contenido-panel-hoy {
+      background: var(--casilla-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 12px 16px 12px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    .numero-gran-hoy {
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: var(--text-color);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .img-gran-hoy {
+      width: 85%;
+      max-width: 120px;
+      height: auto;
+      object-fit: contain;
+      margin: 6px 0;
+    }
+
+    .marcas-gran-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-gran-hoy {
+      padding: 6px 2px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 6px;
+      text-align: center;
+      background-color: var(--btn-bg);
+      border: 2px solid var(--btn-border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+    }
+
+    .btn-gran-hoy svg {
+      width: 1.35em;
+      height: 1.35em;
+      fill: currentColor;
+    }
+
+    .btn-gran-hoy.marcado {
+      background-color: var(--btn-active-bg);
+      border-color: var(--btn-active-border);
+      color: var(--btn-active-text);
+      text-decoration: line-through;
+    }
+
+    /* LEYENDA */
+    .panel-leyenda {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 12px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-color);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .leyenda-item {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .footer-info i {
-      font-size: 1.1rem;
+    .leyenda-item svg {
+      width: 1.4em;
+      height: 1.4em;
+      fill: currentColor;
+      flex-shrink: 0;
     }
 
-    .creditos-autor {
-      font-size: 0.78rem;
-      font-weight: 400;
-      opacity: 0.75;
-      letter-spacing: 0.5px;
-    }
-
-    /* EASTER EGG */
-    .easter-egg-container {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      pointer-events: none;
-      opacity: 0;
-      transform: scale(0) translateY(50px);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .easter-egg-container.activo {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-      pointer-events: auto;
-      animation: popCartoon 0.5s ease-out;
-    }
-
-    .bocadillo-mensaje {
-      background: #ffffff;
-      color: #222f47;
-      border: 3px solid var(--autumn-stroke);
-      padding: 12px 16px;
-      border-radius: 18px;
-      font-size: 0.9rem;
+    /* FOOTER CONTENEDOR IZQUIERDA */
+    .footer-info-izquierda {
+      margin-top: 4px;
+      text-align: center;
+      font-size: 0.82rem;
       font-weight: 600;
-      max-width: 230px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-      position: relative;
-      margin-bottom: 12px;
-      line-height: 1.3;
-      text-align: left;
+      color: var(--text-color);
+      opacity: 0.9;
+      flex-shrink: 0;
     }
 
-    .bocadillo-mensaje::after {
-      content: '';
-      position: absolute;
-      bottom: -12px;
-      left: 35px;
-      border-width: 12px 10px 0;
-      border-style: solid;
-      border-color: #ffffff transparent;
-      display: block;
-      width: 0;
-      z-index: 1;
+    /* FOOTER CONTENEDOR DERECHO */
+    .footer-info-derecha {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--text-color);
+      opacity: 0.9;
+      flex-shrink: 0;
+      width: 100%;
+      padding-top: 6px;
     }
 
-    .bocadillo-mensaje::before {
-      content: '';
-      position: absolute;
-      bottom: -16px;
-      left: 33px;
-      border-width: 14px 12px 0;
-      border-style: solid;
-      border-color: var(--autumn-stroke) transparent;
-      display: block;
-      width: 0;
-      z-index: 0;
+    .texto-rotacion-wrapper {
+      display: inline-flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 5px;
+      text-align: center;
     }
 
-    .sticker-img {
-      width: 180px;
-      height: auto;
-      filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.3));
-      cursor: pointer;
-      transition: transform 0.2s ease;
+    .texto-rotacion-wrapper i {
+      font-size: 0.95rem;
+      margin-top: 1px;
+      flex-shrink: 0;
     }
 
-    .sticker-img:hover {
-      transform: scale(1.08) rotate(-3deg);
-    }
-
-    @keyframes popCartoon {
-      0% {
-        opacity: 0;
-        transform: scale(0.2) translateY(80px) rotate(-10deg);
-      }
-      70% {
-        transform: scale(1.1) translateY(-10px) rotate(3deg);
-      }
-      100% {
-        opacity: 1;
-        transform: scale(1) translateY(0) rotate(0deg);
-      }
-    }
-
-    /* ADAPTACIONES PARA MÓVIL */
-    @media (max-width: 768px) {
+    /* ADAPTACIÓN MÓVIL Y DISPOSITIVOS PEQUEÑOS */
+    @media (max-width: 850px) {
       body {
-        padding: 10px 5px;
-        margin: 0 auto;
+        overflow-y: auto;
+        padding: 16px 0;
       }
-
+      .layout-global {
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+      }
       .contenedor-principal {
-        padding: 12px 8px;
-        border-radius: 16px;
+        height: auto;
+        min-height: 520px;
       }
-
-      /* Borde proporcional ajustado a móviles para que no ciegue el relleno amarillo */
-      .titulo-mes-borde {
-        -webkit-text-stroke: 0.18em var(--autumn-stroke);
-      }
-
-      .pildora-ano {
-        font-size: 0.95rem;
-        padding: 4px 16px;
-      }
-
-      .grid-calendario {
-        gap: 4px;
-      }
-
-      .header-dias {
-        padding: 6px 2px;
-        font-size: 13px;
-        border-radius: 8px;
-      }
-
-      .casilla-dia {
-        min-height: 85px;
-        padding: 4px 2px;
-        border-width: 1.5px;
-        border-radius: 8px;
-      }
-
-      .num-dia {
-        font-size: 16px;
-        margin-bottom: 2px;
-      }
-
-      .marcas-grid {
-        gap: 2px;
-        margin-top: 4px;
-      }
-
-      .caja-btn {
-        padding: 3px 1px;
-        font-size: 12px;
-        border-width: 1px;
-        border-radius: 5px;
-      }
-
-      .footer-info {
-        font-size: 0.8rem;
-        margin-top: 15px;
-      }
-
-      .sticker-img {
-        width: 130px;
-      }
-
-      .bocadillo-mensaje {
-        max-width: 170px;
-        font-size: 0.8rem;
-        padding: 8px 12px;
+      .panel-dia-actual {
+        width: 100%;
+        height: auto;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="contenedor-principal">
-    <div class="header-titulo">
-      <div class="titulo-mes-container" id="btn-easter-egg" title="¡Haz clic aquí!">
-        <div class="titulo-mes-borde" id="titulo-mes-borde"></div>
-        <div class="titulo-mes-relleno" id="titulo-mes-relleno"></div>
+  <div class="layout-global">
+    <!-- CONTENEDOR CALENDARIO -->
+    <div class="contenedor-principal">
+      <div class="header-titulo">
+        <div class="titulo-mes-container" id="btn-easter-egg">
+          <div class="titulo-mes-borde" id="titulo-mes-borde"></div>
+          <div class="titulo-mes-relleno" id="titulo-mes-relleno"></div>
+        </div>
+        <div class="pildora-ano">
+          <i id="icono-ano-izq" class="ti"></i> 
+          <span id="titulo-ano"></span> 
+          <i id="icono-ano-der" class="ti"></i>
+        </div>
       </div>
-      <div class="pildora-ano">
-        <i id="icono-ano-izq" class="ti"></i> 
-        <span id="titulo-ano"></span> 
-        <i id="icono-ano-der" class="ti"></i>
+
+      <div class="grid-calendario" id="calendario"></div>
+
+      <!-- TEXTO DE AUTOR -->
+      <div class="footer-info-izquierda">
+        <span>Hecho por TropiKrown</span>
       </div>
     </div>
 
-    <div class="grid-calendario" id="calendario"></div>
+    <!-- PANEL DERECHO "HOY" -->
+    <div class="panel-dia-actual">
+      <div class="titulo-panel-hoy">Hoy</div>
+      
+      <!-- CONTENEDOR CENTRAL QUE AGRUPA CASILLA HOY Y LEYENDA -->
+      <div class="bloque-central-hoy">
+        <div class="contenido-panel-hoy">
+          <div class="numero-gran-hoy" id="hoy-numero">-</div>
+          <img src="https://imgur.com/7fFkI8O.png" class="img-gran-hoy" alt="Día de hoy">
+          <div class="marcas-gran-grid">
+            <div class="btn-gran-hoy" id="hoy-btn1">-</div>
+            <div class="btn-gran-hoy" id="hoy-btn2">-</div>
+          </div>
+        </div>
 
-    <div class="footer-info">
-      <div class="footer-linea-principal">
-        <i class="ti ti-clock-hour-4"></i>
-        <span>La rotación se actualiza a las 06:00 AM (de la mañana).</span>
+        <!-- LEYENDA -->
+        <div class="panel-leyenda">
+          <div class="leyenda-item">
+            <svg viewBox="0 0 512 512"><path d="M381.16 312.9c13.79-11.83 26.58-25.04 36.31-40.45 6.07 1.83 12.39 2.87 18.8 2.87 34.61 0 63.26-25.75 67.24-59.21C510.63 178.6 480 148 442.49 148c-3.14 0-6.22.23-9.25.68C419.04 88.08 365.18 44 300.4 44c-35.03 0-66.86 12.98-91.17 34.37-14.73-10.96-32.96-17.53-52.74-17.53-48.51 0-87.84 39.33-87.84 87.84 0 5.48.51 10.83 1.48 16.03C28.53 176.6 0 211.96 0 254.49 0 304.38 39.31 345 88.8 345c6.51 0 12.87-.71 19-2.03V468h48.8V336.88c9.64.72 19.43 1.12 29.4 1.12 18.23 0 35.85-1.39 52.6-3.99V468h48.8V328.61c31.13-7.53 58.7-22.18 80.2-42.38V468h48.8V313.25c-12.02.23-23.77.1-35.24-.35zM128 300h-32v-80h32v80zm128 0h-32V180h32v120zm128 0h-32V220h32v80z"/></svg>
+            <span>Bosque espiritual</span>
+          </div>
+          <div class="leyenda-item">
+            <svg viewBox="0 0 512 512"><path d="M228 32h56v40h-56zM88 88h336v32H88zm-32 48h400v32H56zm48 48h64v224h-64zm112 0h64v224h-64zm112 0h64v224h-64zM32 432h448v48H32z"/></svg>
+            <span>Ruinas</span>
+          </div>
+        </div>
       </div>
-      <div class="creditos-autor">
-        Hecho por Tropikrown
+
+      <!-- TEXTO CON RELOJ INTEGRADO -->
+      <div class="footer-info-derecha">
+        <div class="texto-rotacion-wrapper">
+          <i class="ti ti-clock-hour-4"></i>
+          <span>La rotación se actualiza a las 06:00 AM de la mañana.</span>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div class="easter-egg-container" id="easter-egg">
-    <div class="bocadillo-mensaje">
-      ¡Gracias por usar el calendario! Está hecho por Tropikrown con mucho mimo para los heartopianos
-    </div>
-    <img src="https://imgur.com/r0C8Nvc.png" alt="Sticker Tropikrown" class="sticker-img" id="sticker-img">
   </div>
 
   <script>
     const MODO_AUTOMATICO = true; 
-    const MES_MANUAL = 10; 
-    const ANO_MANUAL = 2026; 
+    const MES_MANUAL = 5; 
+    const ANO_MANUAL = 2027; 
+
+    /* MAPAS DE TRAZADO SVG EXACTOS DE REACT-ICONS / GAME ICONS (GI) */
+    const SVG_FOREST = `<svg viewBox="0 0 512 512"><path d="M381.16 312.9c13.79-11.83 26.58-25.04 36.31-40.45 6.07 1.83 12.39 2.87 18.8 2.87 34.61 0 63.26-25.75 67.24-59.21C510.63 178.6 480 148 442.49 148c-3.14 0-6.22.23-9.25.68C419.04 88.08 365.18 44 300.4 44c-35.03 0-66.86 12.98-91.17 34.37-14.73-10.96-32.96-17.53-52.74-17.53-48.51 0-87.84 39.33-87.84 87.84 0 5.48.51 10.83 1.48 16.03C28.53 176.6 0 211.96 0 254.49 0 304.38 39.31 345 88.8 345c6.51 0 12.87-.71 19-2.03V468h48.8V336.88c9.64.72 19.43 1.12 29.4 1.12 18.23 0 35.85-1.39 52.6-3.99V468h48.8V328.61c31.13-7.53 58.7-22.18 80.2-42.38V468h48.8V313.25c-12.02.23-23.77.1-35.24-.35zM128 300h-32v-80h32v80zm128 0h-32V180h32v120zm128 0h-32V220h32v80z"/></svg>`;
+    const SVG_RUINS = `<svg viewBox="0 0 512 512"><path d="M228 32h56v40h-56zM88 88h336v32H88zm-32 48h400v32H56zm48 48h64v224h-64zm112 0h64v224h-64zm112 0h64v224h-64zM32 432h448v48H32z"/></svg>`;
+
+    function renderizarValorBoton(val) {
+      if (val === "B") return SVG_FOREST;
+      if (val === "R") return SVG_RUINS;
+      return val;
+    }
 
     function obtenerFechaAjustada() {
       const ahora = new Date();
@@ -516,297 +606,24 @@
     const IMAGEN_POR_DEFECTO = "https://imgur.com/7fFkI8O.png";
 
     const PALETAS_MES = {
-      1: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/Myh0yQX.png')",
-          '--bg-today': "#6b9ed4",
-          '--border-color': "#8cb2dc",
-          '--text-color': "#1c3a5e",
-          '--btn-bg': "#f0f7ff",
-          '--btn-border': "#a1c2e6",
-          '--btn-hover-bg': "#dbe9f8",
-          '--btn-hover-border': "#7aa5d6",
-          '--btn-active-bg': "#e8ab42",
-          '--btn-active-border': "#b37c22",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#152e4d",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#fff2b2",
-          '--autumn-pill-bg': "#4f8bc9",
-          '--header-dias-bg': "#3b6594",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#8cbbf1"
-        }
-      },
-      2: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/cTvaBxH.png')",
-          '--bg-today': "#b891b0",
-          '--border-color': "#c8b3d6",
-          '--text-color': "#3d2b4f",
-          '--btn-bg': "#faf2f7",
-          '--btn-border': "#d9bece",
-          '--btn-hover-bg': "#f3e2ed",
-          '--btn-hover-border': "#c49eb7",
-          '--btn-active-bg': "#e282a5",
-          '--btn-active-border': "#ad4c70",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#322042",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#ffd1dc",
-          '--autumn-pill-bg': "#a87ca0",
-          '--header-dias-bg': "#5e456d",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#d6c8e3"
-        }
-      },
-      3: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/5yYvKjy.png')",
-          '--bg-today': "#63728a",
-          '--border-color': "#8392a8",
-          '--text-color': "#252e3d",
-          '--btn-bg': "#f2f4f8",
-          '--btn-border': "#9ba9bd",
-          '--btn-hover-bg': "#e1e6ef",
-          '--btn-hover-border': "#728299",
-          '--btn-active-bg': "#d87093",
-          '--btn-active-border': "#9c3d5d",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#1a222e",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#fce4ec",
-          '--autumn-pill-bg': "#e092a8",
-          '--header-dias-bg': "#3b4759",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#8f9bb3"
-        }
-      },
-      4: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/9Uk27RM.png')",
-          '--bg-today': "#6da5db",
-          '--border-color': "#8cb8e6",
-          '--text-color': "#203a58",
-          '--btn-bg': "#f2f7fc",
-          '--btn-border': "#a8cadf",
-          '--btn-hover-bg': "#e1effa",
-          '--btn-hover-border': "#80b0d8",
-          '--btn-active-bg': "#8e7cc3",
-          '--btn-active-border': "#5e4b96",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#162c46",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#ffd3e2",
-          '--autumn-pill-bg': "#ff9ebb",
-          '--header-dias-bg': "#3b6fa0",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#a0c8f0"
-        }
-      },
-      5: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/MaoUGhq.png')",
-          '--bg-today': "#299ec7",
-          '--border-color': "#46afdb",
-          '--text-color': "#0f3854",
-          '--btn-bg': "#f0f9fc",
-          '--btn-border': "#8cd1eb",
-          '--btn-hover-bg': "#d9f1fa",
-          '--btn-hover-border': "#52b3db",
-          '--btn-active-bg': "#ff8fa3",
-          '--btn-active-border': "#d64d68",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#0a2940",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#ffebad",
-          '--autumn-pill-bg': "#ffb347",
-          '--header-dias-bg': "#1b7a9e",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#5bc4e8"
-        }
-      },
-      6: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/6taBAnv.png')",
-          '--bg-today': "#2d5e94",
-          '--border-color': "#e09f67",
-          '--text-color': "#222f47",
-          '--btn-bg': "#fdf8f3",
-          '--btn-border': "#e8ba95",
-          '--btn-hover-bg': "#f7e6d7",
-          '--btn-hover-border': "#d48e55",
-          '--btn-active-bg': "#d96b52",
-          '--btn-active-border': "#9e3b24",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#1a2638",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#ffd082",
-          '--autumn-pill-bg': "#e08353",
-          '--header-dias-bg': "#365478",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#6395cd"
-        }
-      },
-      7: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/GcTOBaH.png')",
-          '--bg-today': "#236db5",              
-          '--border-color': "#f1ad55",          
-          '--text-color': "#172b4d",            
-          '--btn-bg': "#fffdf7",                
-          '--btn-border': "#e4ba83",            
-          '--btn-hover-bg': "#ffeed1",          
-          '--btn-hover-border': "#d99036",      
-          '--btn-active-bg': "#e27338",         
-          '--btn-active-border': "#a34515",     
-          '--btn-active-text': "#ffffff",      
-          '--autumn-stroke': "#0e1f38",         
-          '--autumn-grad-top': "#ffffff",       
-          '--autumn-grad-bottom': "#ffe58f",    
-          '--autumn-pill-bg': "#f28f38",        
-          '--header-dias-bg': "#205288",      
-          '--header-dias-text': "#ffffff",     
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#4a92d9"     
-        }
-      },
-      8: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/2bUMBCw.png')",
-          '--bg-today': "#1d4e89",
-          '--border-color': "#e8a048",
-          '--text-color': "#1a2536",
-          '--btn-bg': "#fffbf3",
-          '--btn-border': "#ebc088",
-          '--btn-hover-bg': "#ffe8c4",
-          '--btn-hover-border': "#db8e35",
-          '--btn-active-bg': "#d95f29",
-          '--btn-active-border': "#993a12",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#0d1a2d",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#ffc56e",
-          '--autumn-pill-bg': "#e07a28",
-          '--header-dias-bg': "#1b3f6b",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#2d5e97"
-        }
-      },
-      9: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/SU98VcX.png')",
-          '--bg-today': "#4a6fa5",
-          '--border-color': "#d4a373",
-          '--text-color': "#232f3e",
-          '--btn-bg': "#fcf8f2",
-          '--btn-border': "#d8b28a",
-          '--btn-hover-bg': "#f3e3d3",
-          '--btn-hover-border': "#c28e5c",
-          '--btn-active-bg': "#c86d51",
-          '--btn-active-border': "#8c412b",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#1b2430",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#f4cb89",
-          '--autumn-pill-bg': "#c97a50",
-          '--header-dias-bg': "#39557b",
-          '--header-dias-text': "#ffffff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#708fb8"
-        }
-      },
-      10: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/O5sITR5.png')",
-          '--bg-today': "#3a2a5e",
-          '--border-color': "#5d4088",
-          '--text-color': "#2d224c",
-          '--btn-bg': "#f3edff",
-          '--btn-border': "#9b72cf",
-          '--btn-hover-bg': "#e5d5ff",
-          '--btn-hover-border': "#7b42bc",
-          '--btn-active-bg': "#8042b0",
-          '--btn-active-border': "#52217a",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#221738",
-          '--autumn-grad-top': "#fff1ab",
-          '--autumn-grad-bottom': "#ffd54f",
-          '--autumn-pill-bg': "#6b3ba7",
-          '--header-dias-bg': "#402c66",
-          '--header-dias-text': "#f0e6ff",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#1e1533"
-        }
-      },
-      11: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/WMXcowV.png')",
-          '--bg-today': "#3e4459",
-          '--border-color': "#7b849c",
-          '--text-color': "#2f3342",
-          '--btn-bg': "#f0f2f7",
-          '--btn-border': "#8d96ae",
-          '--btn-hover-bg': "#dde2ed",
-          '--btn-hover-border': "#6d768e",
-          '--btn-active-bg': "#b8602e",
-          '--btn-active-border': "#7a3b15",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#1e202d",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#d8bfa2",
-          '--autumn-pill-bg': "#a05a32",
-          '--header-dias-bg': "#3e4559",
-          '--header-dias-text': "#e8ecf5",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#2b2d3d"
-        }
-      },
-      12: {
-        colors: {
-          '--bg-imagen-mes': "url('https://imgur.com/THTE1rs.png')",
-          '--bg-today': "#2d4059",
-          '--border-color': "#7392b7",
-          '--text-color': "#1c2841",
-          '--btn-bg': "#eef4f8",
-          '--btn-border': "#9bb1cc",
-          '--btn-hover-bg': "#dbe6f0",
-          '--btn-hover-border': "#7392b7",
-          '--btn-active-bg': "#d4a373",
-          '--btn-active-border': "#a67c52",
-          '--btn-active-text': "#ffffff",
-          '--autumn-stroke': "#0f172a",
-          '--autumn-grad-top': "#ffffff",
-          '--autumn-grad-bottom': "#ffe599",
-          '--autumn-pill-bg': "#e09f3e",
-          '--header-dias-bg': "#2d3e50",
-          '--header-dias-text': "#e2ece9",
-          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
-          '--bg-body-fallback': "#1b263b"
-        }
-      }
+      1: { colors: { '--bg-imagen-mes': "url('https://imgur.com/Myh0yQX.png')", '--bg-today': "#6b9ed4", '--border-color': "#8cb2dc", '--text-color': "#1c3a5e", '--btn-bg': "#f0f7ff", '--btn-border': "#a1c2e6", '--btn-hover-bg': "#dbe9f8", '--btn-hover-border': "#7aa5d6", '--btn-active-bg': "#e8ab42", '--btn-active-border': "#b37c22", '--btn-active-text': "#ffffff", '--autumn-stroke': "#152e4d", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#fff2b2", '--autumn-pill-bg': "#4f8bc9", '--header-dias-bg': "#3b6594", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#8cbbf1" } },
+      2: { colors: { '--bg-imagen-mes': "url('https://imgur.com/cTvaBxH.png')", '--bg-today': "#b891b0", '--border-color': "#c8b3d6", '--text-color': "#3d2b4f", '--btn-bg': "#faf2f7", '--btn-border': "#d9bece", '--btn-hover-bg': "#f3e2ed", '--btn-hover-border': "#c49eb7", '--btn-active-bg': "#e282a5", '--btn-active-border': "#ad4c70", '--btn-active-text': "#ffffff", '--autumn-stroke': "#322042", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffd1dc", '--autumn-pill-bg': "#a87ca0", '--header-dias-bg': "#5e456d", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#d6c8e3" } },
+      3: { colors: { '--bg-imagen-mes': "url('https://imgur.com/5yYvKjy.png')", '--bg-today': "#63728a", '--border-color': "#8392a8", '--text-color': "#252e3d", '--btn-bg': "#f2f4f8", '--btn-border': "#9ba9bd", '--btn-hover-bg': "#e1e6ef", '--btn-hover-border': "#728299", '--btn-active-bg': "#d87093", '--btn-active-border': "#9c3d5d", '--btn-active-text': "#ffffff", '--autumn-stroke': "#1a222e", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#fce4ec", '--autumn-pill-bg': "#e092a8", '--header-dias-bg': "#3b4759", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#8f9bb3" } },
+      4: { colors: { '--bg-imagen-mes': "url('https://imgur.com/9Uk27RM.png')", '--bg-today': "#6da5db", '--border-color': "#8cb8e6", '--text-color': "#203a58", '--btn-bg': "#f2f7fc", '--btn-border': "#a8cadf", '--btn-hover-bg': "#e1effa", '--btn-hover-border': "#80b0d8", '--btn-active-bg': "#8e7cc3", '--btn-active-border': "#5e4b96", '--btn-active-text': "#ffffff", '--autumn-stroke': "#162c46", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffd3e2", '--autumn-pill-bg': "#ff9ebb", '--header-dias-bg': "#3b6fa0", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#a0c8f0" } },
+      5: { colors: { '--bg-imagen-mes': "url('https://imgur.com/MaoUGhq.png')", '--bg-today': "#299ec7", '--border-color': "#46afdb", '--text-color': "#0f3854", '--btn-bg': "#f0f9fc", '--btn-border': "#8cd1eb", '--btn-hover-bg': "#d9f1fa", '--btn-hover-border': "#52b3db", '--btn-active-bg': "#ff8fa3", '--btn-active-border': "#d64d68", '--btn-active-text': "#ffffff", '--autumn-stroke': "#0a2940", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffebad", '--autumn-pill-bg': "#ffb347", '--header-dias-bg': "#1b7a9e", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#5bc4e8" } },
+      6: { colors: { '--bg-imagen-mes': "url('https://imgur.com/6taBAnv.png')", '--bg-today': "#2d5e94", '--border-color': "#e09f67", '--text-color': "#222f47", '--btn-bg': "#fdf8f3", '--btn-border': "#e8ba95", '--btn-hover-bg': "#f7e6d7", '--btn-hover-border': "#d48e55", '--btn-active-bg': "#d96b52", '--btn-active-border': "#9e3b24", '--btn-active-text': "#ffffff", '--autumn-stroke': "#1a2638", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffd082", '--autumn-pill-bg': "#e08353", '--header-dias-bg': "#365478", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#6395cd" } },
+      7: { colors: { '--bg-imagen-mes': "url('https://imgur.com/GcTOBaH.png')", '--bg-today': "#236db5", '--border-color': "#f1ad55", '--text-color': "#172b4d", '--btn-bg': "#fffdf7", '--btn-border': "#e4ba83", '--btn-hover-bg': "#ffeed1", '--btn-hover-border': "#d99036", '--btn-active-bg': "#e27338", '--btn-active-border': "#a34515", '--btn-active-text': "#ffffff", '--autumn-stroke': "#0e1f38", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffe58f", '--autumn-pill-bg': "#f28f38", '--header-dias-bg': "#205288", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#4a92d9" } },
+      8: { colors: { '--bg-imagen-mes': "url('https://imgur.com/2bUMBCw.png')", '--bg-today': "#1d4e89", '--border-color': "#e8a048", '--text-color': "#1a2536", '--btn-bg': "#fffbf3", '--btn-border': "#ebc088", '--btn-hover-bg': "#ffe8c4", '--btn-hover-border': "#db8e35", '--btn-active-bg': "#d95f29", '--btn-active-border': "#993a12", '--btn-active-text': "#ffffff", '--autumn-stroke': "#0d1a2d", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffc56e", '--autumn-pill-bg': "#e07a28", '--header-dias-bg': "#1b3f6b", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#2d5e97" } },
+      9: { colors: { '--bg-imagen-mes': "url('https://imgur.com/SU98VcX.png')", '--bg-today': "#4a6fa5", '--border-color': "#d4a373", '--text-color': "#232f3e", '--btn-bg': "#fcf8f2", '--btn-border': "#d8b28a", '--btn-hover-bg': "#f3e3d3", '--btn-hover-border': "#c28e5c", '--btn-active-bg': "#c86d51", '--btn-active-border': "#8c412b", '--btn-active-text': "#ffffff", '--autumn-stroke': "#1b2430", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#f4cb89", '--autumn-pill-bg': "#c97a50", '--header-dias-bg': "#39557b", '--header-dias-text': "#ffffff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#708fb8" } },
+      10: { colors: { '--bg-imagen-mes': "url('https://imgur.com/O5sITR5.png')", '--bg-today': "#3a2a5e", '--border-color': "#5d4088", '--text-color': "#2d224c", '--btn-bg': "#f3edff", '--btn-border': "#9b72cf", '--btn-hover-bg': "#e5d5ff", '--btn-hover-border': "#7b42bc", '--btn-active-bg': "#8042b0", '--btn-active-border': "#52217a", '--btn-active-text': "#ffffff", '--autumn-stroke': "#221738", '--autumn-grad-top': "#fff1ab", '--autumn-grad-bottom': "#ffd54f", '--autumn-pill-bg': "#6b3ba7", '--header-dias-bg': "#402c66", '--header-dias-text': "#f0e6ff", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#1e1533" } },
+      11: { colors: { '--bg-imagen-mes': "url('https://imgur.com/WMXcowV.png')", '--bg-today': "#3e4459", '--border-color': "#7b849c", '--text-color': "#2f3342", '--btn-bg': "#f0f2f7", '--btn-border': "#8d96ae", '--btn-hover-bg': "#dde2ed", '--btn-hover-border': "#6d768e", '--btn-active-bg': "#b8602e", '--btn-active-border': "#7a3b15", '--btn-active-text': "#ffffff", '--autumn-stroke': "#1e202d", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#d8bfa2", '--autumn-pill-bg': "#a05a32", '--header-dias-bg': "#3e4559", '--header-dias-text': "#e8ecf5", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#2b2d3d" } },
+      12: { colors: { '--bg-imagen-mes': "url('https://imgur.com/THTE1rs.png')", '--bg-today': "#2d4059", '--border-color': "#7392b7", '--text-color': "#1c2841", '--btn-bg': "#eef4f8", '--btn-border': "#9bb1cc", '--btn-hover-bg': "#dbe6f0", '--btn-hover-border': "#7392b7", '--btn-active-bg': "#d4a373", '--btn-active-border': "#a67c52", '--btn-active-text': "#ffffff", '--autumn-stroke': "#0f172a", '--autumn-grad-top': "#ffffff", '--autumn-grad-bottom': "#ffe599", '--autumn-pill-bg': "#e09f3e", '--header-dias-bg': "#2d3e50", '--header-dias-text': "#e2ece9", '--casilla-bg': "rgba(255, 255, 255, 0.92)", '--bg-body-fallback': "#1b263b" } }
     };
 
     const ICONOS_MES = {
-      1: "ti-snowflake",
-      2: "ti-hearts",
-      3: "ti-flower",
-      4: "ti-cloud-rain",
-      5: "ti-sun-high",
-      6: "ti-beach",
-      7: "ti-sun",
-      8: "ti-swimming",
-      9: "ti-leaf",
-      10: "ti-ghost",
-      11: "ti-wind",
-      12: "ti-christmas-tree",
+      1: "ti-snowflake", 2: "ti-hearts", 3: "ti-flower", 4: "ti-cloud-rain",
+      5: "ti-sun-high", 6: "ti-beach", 7: "ti-sun", 8: "ti-swimming",
+      9: "ti-leaf", 10: "ti-ghost", 11: "ti-wind", 12: "ti-christmas-tree",
     };
 
     function aplicarEstiloMes(numMes) {
@@ -847,18 +664,42 @@
     }
 
     const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    
-    const esMovil = window.innerWidth <= 768;
-    const diasSemana = esMovil ? ["L", "M", "X", "J", "V", "S", "D"] : ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
-    const nombreMes = nombresMeses[MES_CONFIG - 1];
-    document.getElementById("titulo-mes-borde").textContent = nombreMes;
-    document.getElementById("titulo-mes-relleno").textContent = nombreMes;
+    document.getElementById("titulo-mes-borde").textContent = nombresMeses[MES_CONFIG - 1];
+    document.getElementById("titulo-mes-relleno").textContent = nombresMeses[MES_CONFIG - 1];
     document.getElementById("titulo-ano").textContent = ANO_CONFIG;
 
     const iconoClase = ICONOS_MES[MES_CONFIG] || "ti-sun";
     document.getElementById("icono-ano-izq").className = `ti ${iconoClase}`;
     document.getElementById("icono-ano-der").className = `ti ${iconoClase}`;
+
+    function actualizarPanelHoy(diaNum, infoDia, claveStorage, estadoGuardado) {
+      document.getElementById("hoy-numero").textContent = diaNum;
+      
+      const hoyBtn1 = document.getElementById("hoy-btn1");
+      const hoyBtn2 = document.getElementById("hoy-btn2");
+
+      hoyBtn1.innerHTML = renderizarValorBoton(infoDia.f);
+      hoyBtn2.innerHTML = renderizarValorBoton(infoDia.a);
+
+      hoyBtn1.classList.toggle("marcado", estadoGuardado.check1);
+      hoyBtn2.classList.toggle("marcado", estadoGuardado.check2);
+
+      hoyBtn1.onclick = () => {
+        estadoGuardado.check1 = !estadoGuardado.check1;
+        hoyBtn1.classList.toggle("marcado", estadoGuardado.check1);
+        document.getElementById(`btn1_${diaNum}`).classList.toggle("marcado", estadoGuardado.check1);
+        localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
+      };
+
+      hoyBtn2.onclick = () => {
+        estadoGuardado.check2 = !estadoGuardado.check2;
+        hoyBtn2.classList.toggle("marcado", estadoGuardado.check2);
+        document.getElementById(`btn2_${diaNum}`).classList.toggle("marcado", estadoGuardado.check2);
+        localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
+      };
+    }
 
     function generarCalendario() {
       const contenedor = document.getElementById("calendario");
@@ -877,6 +718,12 @@
       let offset = primerDiaMes.getDay() - 1;
       if (offset === -1) offset = 6;
 
+      const totalCasillas = offset + totalDias;
+      const numFilas = Math.ceil(totalCasillas / 7);
+      
+      /* AJUSTE DINÁMICO DE FILAS PARA CALCULAR EL TAMAÑO CORRECTO */
+      document.documentElement.style.setProperty('--filas-mes', numFilas);
+
       for (let i = 0; i < offset; i++) {
         const celdaVacia = document.createElement("div");
         celdaVacia.className = "casilla-dia vacia";
@@ -884,19 +731,24 @@
       }
 
       const esMesActual = fechaAjustada.getFullYear() === ANO_CONFIG && (fechaAjustada.getMonth() + 1) === MES_CONFIG;
+      const diaHoyNum = esMesActual ? fechaAjustada.getDate() : 1;
 
       for (let dia = 1; dia <= totalDias; dia++) {
         const celda = document.createElement("div");
         celda.className = "casilla-dia";
 
-        if (esMesActual && fechaAjustada.getDate() === dia) {
+        const esHoy = esMesActual && diaHoyNum === dia;
+        if (esHoy) {
           celda.classList.add("hoy");
         }
 
         const infoDia = obtenerDatosDia(ANO_CONFIG, MES_CONFIG, dia);
-
         const claveStorage = `cal_${ANO_CONFIG}_${MES_CONFIG}_dia_${dia}`;
         const estadoGuardado = JSON.parse(localStorage.getItem(claveStorage)) || { check1: false, check2: false };
+
+        if (esHoy) {
+          actualizarPanelHoy(dia, infoDia, claveStorage, estadoGuardado);
+        }
 
         celda.innerHTML = `
           <div class="header-casilla">
@@ -905,10 +757,10 @@
           </div>
           <div class="marcas-grid">
             <div class="caja-btn ${estadoGuardado.check1 ? 'marcado' : ''}" id="btn1_${dia}">
-              ${infoDia.f}
+              ${renderizarValorBoton(infoDia.f)}
             </div>
             <div class="caja-btn ${estadoGuardado.check2 ? 'marcado' : ''}" id="btn2_${dia}">
-              ${infoDia.a}
+              ${renderizarValorBoton(infoDia.a)}
             </div>
           </div>
         `;
@@ -919,12 +771,14 @@
         btn1.addEventListener("click", () => {
           estadoGuardado.check1 = !estadoGuardado.check1;
           btn1.classList.toggle("marcado", estadoGuardado.check1);
+          if (esHoy) document.getElementById("hoy-btn1").classList.toggle("marcado", estadoGuardado.check1);
           localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
         });
 
         btn2.addEventListener("click", () => {
           estadoGuardado.check2 = !estadoGuardado.check2;
           btn2.classList.toggle("marcado", estadoGuardado.check2);
+          if (esHoy) document.getElementById("hoy-btn2").classList.toggle("marcado", estadoGuardado.check2);
           localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
         });
 
@@ -933,28 +787,6 @@
     }
 
     generarCalendario();
-
-    window.addEventListener('resize', () => {
-      const esMovilActual = window.innerWidth <= 768;
-      const nuevosDias = esMovilActual ? ["L", "M", "X", "J", "V", "S", "D"] : ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-      if (diasSemana[0] !== nuevosDias[0]) {
-        diasSemana.length = 0;
-        diasSemana.push(...nuevosDias);
-        generarCalendario();
-      }
-    });
-
-    const btnEasterEgg = document.getElementById("btn-easter-egg");
-    const containerEasterEgg = document.getElementById("easter-egg");
-    const stickerImg = document.getElementById("sticker-img");
-
-    btnEasterEgg.addEventListener("click", () => {
-      containerEasterEgg.classList.toggle("activo");
-    });
-
-    stickerImg.addEventListener("click", () => {
-      containerEasterEgg.classList.remove("activo");
-    });
   </script>
 </body>
 </html>

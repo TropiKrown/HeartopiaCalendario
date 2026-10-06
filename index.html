@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario Anual</title>
+  
+  <!-- Fuente Fredoka de Google Fonts -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+  </style>
+
+  <!-- Librería de Iconos de Tabler Icons (https://tabler.io/icons) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <style>
+    :root {
+      /* Variables dinámicas por mes */
+      --bg-imagen-mes: url('https://imgur.com/6taBAnv.png');
+
+      --bg-today: #2d5e94;
+      --border-color: #e09f67;
+      --text-color: #222f47;
+      
+      --btn-bg: #fdf8f3;
+      --btn-border: #e8ba95;
+      --btn-hover-bg: #f7e6d7;
+      --btn-hover-border: #d48e55;
+      --btn-active-bg: #d96b52;
+      --btn-active-border: #9e3b24;
+      --btn-active-text: #ffffff;
+      
+      --autumn-stroke: #1a2638;
+      --autumn-grad-top: #ffffff;
+      --autumn-grad-bottom: #ffd082;
+      --autumn-pill-bg: #e08353;
+      
+      --header-dias-bg: #365478;
+      --header-dias-text: #ffffff;
+      --casilla-bg: rgba(255, 255, 255, 0.92);
+      --bg-body-fallback: #6395cd;
+    }
+
+    body { 
+      font-family: 'Fredoka', cursive, sans-serif; 
+      color: var(--text-color);
+      max-width: 1100px; 
+      margin: 20px auto; 
+      padding: 20px 15px; 
+      position: relative;
+      background-color: var(--bg-body-fallback);
+    }
+
+    /* CAPA DE FONDO CON BLUR / DESENFOQUE Y DINÁMICA POR MES */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      
+      background-image: var(--bg-imagen-mes);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      
+      filter: blur(1px);
+      transform: scale(1.05);
+    }
+
+    /* TARJETA PRINCIPAL CON EFECTO VIDRIO */
+    .contenedor-principal {
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* ENCABEZADO */
+    .header-titulo {
+      text-align: center;
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* EFECTO DE MES (DEGRADADO + CONTORNO ANCHO) CON EASTER EGG INTERACTIVO */
+    .titulo-mes-container {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease;
+    }
+
+    .titulo-mes-container:hover {
+      transform: scale(1.03);
+    }
+
+    .titulo-mes-container:active {
+      transform: scale(0.98);
+    }
+
+    .titulo-mes-borde {
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--autumn-stroke);
+      -webkit-text-stroke: 14px var(--autumn-stroke);
+      text-transform: capitalize;
+      letter-spacing: 2px;
+      margin: 0;
+      line-height: 1;
+      paint-order: stroke fill;
+    }
+
+    .titulo-mes-relleno {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      font-size: 4rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      letter-spacing: 2px;
+      margin: 0;
+      line-height: 1;
+      background: linear-gradient(180deg, var(--autumn-grad-top) 25%, var(--autumn-grad-bottom) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      pointer-events: none;
+    }
+
+    /* PÍLDORA DEL AÑO CON TABLER ICONS */
+    .pildora-ano {
+      background-color: var(--autumn-pill-bg);
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 6px 24px;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      letter-spacing: 1px;
+    }
+
+    .pildora-ano i {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .grid-calendario {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .header-dias { 
+      font-weight: 600; 
+      text-align: center; 
+      background: var(--header-dias-bg); 
+      padding: 10px; 
+      border-radius: 12px;
+      font-size: 18px;
+      color: var(--header-dias-text);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    
+    .casilla-dia {
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 8px;
+      min-height: 135px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--casilla-bg);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .casilla-dia:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .vacia { 
+      border: none; 
+      background: transparent; 
+      box-shadow: none; 
+    }
+    
+    .hoy { 
+      background-color: var(--bg-today); 
+      border-color: #ffda85; 
+    }
+
+    .hoy .num-dia {
+      color: #ffffff;
+    }
+    
+    .header-casilla {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .num-dia { 
+      font-weight: 700; 
+      font-size: 25px;
+      align-self: flex-start; 
+      margin-bottom: 4px;
+      color: var(--text-color);
+    }
+    
+    .img-dia { 
+      width: 100%; 
+      height: auto; 
+      display: block;
+      object-fit: contain; 
+    }
+    
+    .marcas-grid { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 6px; 
+      margin-top: 6px; 
+      width: 100%;
+    }
+
+    .caja-btn { 
+      background-color: var(--btn-bg);
+      border: 1.5px solid var(--btn-border);
+      border-radius: 8px;
+      padding: 4px 2px;
+      font-size: 17px; 
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-color);
+    }
+
+    .caja-btn:hover {
+      background-color: var(--btn-hover-bg);
+      border-color: var(--btn-hover-border);
+    }
+
+    .caja-btn.marcado { 
+      background-color: var(--btn-active-bg);
+      border-color: var(--btn-active-border);
+      color: var(--btn-active-text);
+      text-decoration: line-through; 
+    }
+
+    /* PIE DE PÁGINA DEL CONTENEDOR */
+    .footer-info {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      opacity: 0.9;
+    }
+
+    .footer-linea-principal {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-info i {
+      font-size: 1.1rem;
+    }
+
+    .creditos-autor {
+      font-size: 0.78rem;
+      font-weight: 400;
+      opacity: 0.75;
+      letter-spacing: 0.5px;
+    }
+
+    /* ==========================================
+       EASTER EGG STICKER & BOCADILLO ESTILO CARTOON
+       ========================================== */
+    .easter-egg-container {
+      position: fixed;
+      bottom: -30px;
+      left: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0) translateY(50px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .easter-egg-container.activo {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      animation: popCartoon 0.5s ease-out;
+    }
+
+    .bocadillo-mensaje {
+      background: #ffffff;
+      color: #222f47;
+      border: 3px solid var(--autumn-stroke);
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      max-width: 230px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      text-align: left;
+    }
+
+    /* Flechita del bocadillo */
+    .bocadillo-mensaje::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 35px;
+      border-width: 12px 10px 0;
+      border-style: solid;
+      border-color: #ffffff transparent;
+      display: block;
+      width: 0;
+      z-index: 1;
+    }
+
+    .bocadillo-mensaje::before {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 33px;
+      border-width: 14px 12px 0;
+      border-style: solid;
+      border-color: var(--autumn-stroke) transparent;
+      display: block;
+      width: 0;
+      z-index: 0;
+    }
+
+    .sticker-img {
+      width: 225px;
+      height: auto;
+      filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.3));
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .sticker-img:hover {
+      transform: scale(1.08) rotate(-3deg);
+    }
+
+    /* Animación de entrada estilo Cartoon */
+    @keyframes popCartoon {
+      0% {
+        opacity: 0;
+        transform: scale(0.2) translateY(80px) rotate(-10deg);
+      }
+      70% {
+        transform: scale(1.1) translateY(-10px) rotate(3deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-principal">
+    <!-- ENCABEZADO CON ÍCONOS SIMÉTRICOS Y DINÁMICOS -->
+    <div class="header-titulo">
+      <div class="titulo-mes-container" id="btn-easter-egg" title="¡Haz clic aquí!">
+        <div class="titulo-mes-borde" id="titulo-mes-borde"></div>
+        <div class="titulo-mes-relleno" id="titulo-mes-relleno"></div>
+      </div>
+      <div class="pildora-ano">
+        <i id="icono-ano-izq" class="ti"></i> 
+        <span id="titulo-ano"></span> 
+        <i id="icono-ano-der" class="ti"></i>
+      </div>
+    </div>
+
+    <div class="grid-calendario" id="calendario"></div>
+
+    <!-- PIE DEL CONTENEDOR CON INFORMACIÓN DE ROTACIÓN Y CRÉDITOS -->
+    <div class="footer-info">
+      <div class="footer-linea-principal">
+        <i class="ti ti-clock-hour-4"></i>
+        <span>La rotación se actualiza a las 06:00 AM de la mañana.</span>
+      </div>
+      <div class="creditos-autor">
+        Hecho por Tropikrown
+      </div>
+    </div>
+  </div>
+
+  <!-- EASTER EGG STICKER Y BOCADILLO -->
+  <div class="easter-egg-container" id="easter-egg">
+    <div class="bocadillo-mensaje">
+      ¡Gracias por usar el calendario! Está hecho por Tropikrown con mucho mimo para los heartopianos
+    </div>
+    <img src="https://imgur.com/r0C8Nvc.png" alt="Sticker Tropikrown" class="sticker-img" id="sticker-img">
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. CONFIGURACIÓN MODO AUTOMÁTICO / MANUAL
+    // ==========================================
+    const MODO_AUTOMATICO = true; 
+    const MES_MANUAL = 12; 
+    const ANO_MANUAL = 2027; 
+
+    function obtenerFechaAjustada() {
+      const ahora = new Date();
+      return new Date(ahora.getTime() - (6 * 60 * 60 * 1000));
+    }
+
+    const fechaAjustada = obtenerFechaAjustada();
+
+    const MES_CONFIG = MODO_AUTOMATICO ? (fechaAjustada.getMonth() + 1) : MES_MANUAL;
+    const ANO_CONFIG = MODO_AUTOMATICO ? fechaAjustada.getFullYear() : ANO_MANUAL;
+
+    const IMAGEN_POR_DEFECTO = "https://imgur.com/7fFkI8O.png";
+
+    // ==========================================
+    // 2. PALETAS Y FONDOS TEMÁTICOS POR MES
+    // ==========================================
+    const PALETAS_MES = {
+      1: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/Myh0yQX.png')",
+          '--bg-today': "#6b9ed4",
+          '--border-color': "#8cb2dc",
+          '--text-color': "#1c3a5e",
+          '--btn-bg': "#f0f7ff",
+          '--btn-border': "#a1c2e6",
+          '--btn-hover-bg': "#dbe9f8",
+          '--btn-hover-border': "#7aa5d6",
+          '--btn-active-bg': "#e8ab42",
+          '--btn-active-border': "#b37c22",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#152e4d",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#fff2b2",
+          '--autumn-pill-bg': "#4f8bc9",
+          '--header-dias-bg': "#3b6594",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#8cbbf1"
+        }
+      },
+      2: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/cTvaBxH.png')",
+          '--bg-today': "#b891b0",
+          '--border-color': "#c8b3d6",
+          '--text-color': "#3d2b4f",
+          '--btn-bg': "#faf2f7",
+          '--btn-border': "#d9bece",
+          '--btn-hover-bg': "#f3e2ed",
+          '--btn-hover-border': "#c49eb7",
+          '--btn-active-bg': "#e282a5",
+          '--btn-active-border': "#ad4c70",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#322042",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#ffd1dc",
+          '--autumn-pill-bg': "#a87ca0",
+          '--header-dias-bg': "#5e456d",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#d6c8e3"
+        }
+      },
+      3: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/5yYvKjy.png')",
+          '--bg-today': "#63728a",
+          '--border-color': "#8392a8",
+          '--text-color': "#252e3d",
+          '--btn-bg': "#f2f4f8",
+          '--btn-border': "#9ba9bd",
+          '--btn-hover-bg': "#e1e6ef",
+          '--btn-hover-border': "#728299",
+          '--btn-active-bg': "#d87093",
+          '--btn-active-border': "#9c3d5d",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#1a222e",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#fce4ec",
+          '--autumn-pill-bg': "#e092a8",
+          '--header-dias-bg': "#3b4759",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#8f9bb3"
+        }
+      },
+      4: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/9Uk27RM.png')",
+          '--bg-today': "#6da5db",
+          '--border-color': "#8cb8e6",
+          '--text-color': "#203a58",
+          '--btn-bg': "#f2f7fc",
+          '--btn-border': "#a8cadf",
+          '--btn-hover-bg': "#e1effa",
+          '--btn-hover-border': "#80b0d8",
+          '--btn-active-bg': "#8e7cc3",
+          '--btn-active-border': "#5e4b96",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#162c46",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#ffd3e2",
+          '--autumn-pill-bg': "#ff9ebb",
+          '--header-dias-bg': "#3b6fa0",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#a0c8f0"
+        }
+      },
+      5: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/MaoUGhq.png')",
+          '--bg-today': "#299ec7",
+          '--border-color': "#46afdb",
+          '--text-color': "#0f3854",
+          '--btn-bg': "#f0f9fc",
+          '--btn-border': "#8cd1eb",
+          '--btn-hover-bg': "#d9f1fa",
+          '--btn-hover-border': "#52b3db",
+          '--btn-active-bg': "#ff8fa3",
+          '--btn-active-border': "#d64d68",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#0a2940",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#ffebad",
+          '--autumn-pill-bg': "#ffb347",
+          '--header-dias-bg': "#1b7a9e",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#5bc4e8"
+        }
+      },
+      6: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/6taBAnv.png')",
+          '--bg-today': "#2d5e94",
+          '--border-color': "#e09f67",
+          '--text-color': "#222f47",
+          '--btn-bg': "#fdf8f3",
+          '--btn-border': "#e8ba95",
+          '--btn-hover-bg': "#f7e6d7",
+          '--btn-hover-border': "#d48e55",
+          '--btn-active-bg': "#d96b52",
+          '--btn-active-border': "#9e3b24",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#1a2638",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#ffd082",
+          '--autumn-pill-bg': "#e08353",
+          '--header-dias-bg': "#365478",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#6395cd"
+        }
+      },
+      7: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/GcTOBaH.png')",
+          '--bg-today': "#236db5",              
+          '--border-color': "#f1ad55",          
+          '--text-color': "#172b4d",            
+          '--btn-bg': "#fffdf7",                
+          '--btn-border': "#e4ba83",            
+          '--btn-hover-bg': "#ffeed1",          
+          '--btn-hover-border': "#d99036",      
+          '--btn-active-bg': "#e27338",         
+          '--btn-active-border': "#a34515",     
+          '--btn-active-text': "#ffffff",      
+          '--autumn-stroke': "#0e1f38",         
+          '--autumn-grad-top': "#ffffff",       
+          '--autumn-grad-bottom': "#ffe58f",    
+          '--autumn-pill-bg': "#f28f38",        
+          '--header-dias-bg': "#205288",      
+          '--header-dias-text': "#ffffff",     
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#4a92d9"     
+        }
+      },
+      8: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/2bUMBCw.png')",
+          '--bg-today': "#1d4e89",
+          '--border-color': "#e8a048",
+          '--text-color': "#1a2536",
+          '--btn-bg': "#fffbf3",
+          '--btn-border': "#ebc088",
+          '--btn-hover-bg': "#ffe8c4",
+          '--btn-hover-border': "#db8e35",
+          '--btn-active-bg': "#d95f29",
+          '--btn-active-border': "#993a12",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#0d1a2d",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#ffc56e",
+          '--autumn-pill-bg': "#e07a28",
+          '--header-dias-bg': "#1b3f6b",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#2d5e97"
+        }
+      },
+      9: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/SU98VcX.png')",
+          '--bg-today': "#4a6fa5",
+          '--border-color': "#d4a373",
+          '--text-color': "#232f3e",
+          '--btn-bg': "#fcf8f2",
+          '--btn-border': "#d8b28a",
+          '--btn-hover-bg': "#f3e3d3",
+          '--btn-hover-border': "#c28e5c",
+          '--btn-active-bg': "#c86d51",
+          '--btn-active-border': "#8c412b",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#1b2430",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#f4cb89",
+          '--autumn-pill-bg': "#c97a50",
+          '--header-dias-bg': "#39557b",
+          '--header-dias-text': "#ffffff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#708fb8"
+        }
+      },
+      10: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/O5sITR5.png')",
+          '--bg-today': "#3a2a5e",
+          '--border-color': "#5d4088",
+          '--text-color': "#2d224c",
+          '--btn-bg': "#f3edff",
+          '--btn-border': "#9b72cf",
+          '--btn-hover-bg': "#e5d5ff",
+          '--btn-hover-border': "#7b42bc",
+          '--btn-active-bg': "#8042b0",
+          '--btn-active-border': "#52217a",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#221738",
+          '--autumn-grad-top': "#fff1ab",
+          '--autumn-grad-bottom': "#ffd54f",
+          '--autumn-pill-bg': "#6b3ba7",
+          '--header-dias-bg': "#402c66",
+          '--header-dias-text': "#f0e6ff",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#1e1533"
+        }
+      },
+      11: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/WMXcowV.png')",
+          '--bg-today': "#3e4459",
+          '--border-color': "#7b849c",
+          '--text-color': "#2f3342",
+          '--btn-bg': "#f0f2f7",
+          '--btn-border': "#8d96ae",
+          '--btn-hover-bg': "#dde2ed",
+          '--btn-hover-border': "#6d768e",
+          '--btn-active-bg': "#b8602e",
+          '--btn-active-border': "#7a3b15",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#1e202d",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#d8bfa2",
+          '--autumn-pill-bg': "#a05a32",
+          '--header-dias-bg': "#3e4559",
+          '--header-dias-text': "#e8ecf5",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#2b2d3d"
+        }
+      },
+      12: {
+        colors: {
+          '--bg-imagen-mes': "url('https://imgur.com/THTE1rs.png')",
+          '--bg-today': "#2d4059",
+          '--border-color': "#7392b7",
+          '--text-color': "#1c2841",
+          '--btn-bg': "#eef4f8",
+          '--btn-border': "#9bb1cc",
+          '--btn-hover-bg': "#dbe6f0",
+          '--btn-hover-border': "#7392b7",
+          '--btn-active-bg': "#d4a373",
+          '--btn-active-border': "#a67c52",
+          '--btn-active-text': "#ffffff",
+          '--autumn-stroke': "#0f172a",
+          '--autumn-grad-top': "#ffffff",
+          '--autumn-grad-bottom': "#ffe599",
+          '--autumn-pill-bg': "#e09f3e",
+          '--header-dias-bg': "#2d3e50",
+          '--header-dias-text': "#e2ece9",
+          '--casilla-bg': "rgba(255, 255, 255, 0.92)",
+          '--bg-body-fallback': "#1b263b"
+        }
+      }
+    };
+
+    // ==========================================
+    // 3. MAPA DE ÍCONOS POR MES (TABLER ICONS)
+    // ==========================================
+    const ICONOS_MES = {
+      1: "ti-snowflake",        // Enero
+      2: "ti-hearts",           // Febrero
+      3: "ti-flower",           // Marzo
+      4: "ti-cloud-rain",       // Abril
+      5: "ti-sun-high",         // Mayo
+      6: "ti-beach",            // Junio
+      7: "ti-sun",              // Julio
+      8: "ti-swimming",         // Agosto
+      9: "ti-leaf",             // Septiembre
+      10: "ti-ghost",           // Octubre
+      11: "ti-wind",            // Noviembre
+      12: "ti-christmas-tree",  // Diciembre
+    };
+
+    // Aplicar estilo del mes seleccionado
+    function aplicarEstiloMes(numMes) {
+      const configuracionMes = PALETAS_MES[numMes];
+      if (configuracionMes) {
+        Object.entries(configuracionMes.colors).forEach(([variable, valor]) => {
+          document.documentElement.style.setProperty(variable, valor);
+        });
+      }
+    }
+
+    aplicarEstiloMes(MES_CONFIG);
+
+    // ==========================================
+    // 4. SECUENCIA CÍCLICA DE 50 DÍAS
+    // ==========================================
+    const SECUENCIA_50_DIAS = [
+      { a: "B",  f: "4"  }, { a: "B",  f: "4"  }, { a: "11", f: "7"  }, { a: "9",  f: "5"  }, { a: "10", f: "3"  },
+      { a: "3",  f: "7"  }, { a: "6",  f: "7"  }, { a: "9",  f: "1"  }, { a: "4",  f: "5"  }, { a: "10", f: "9"  },
+      { a: "B",  f: "11" }, { a: "7",  f: "6"  }, { a: "6",  f: "2"  }, { a: "11", f: "2"  }, { a: "2",  f: "3"  },
+      { a: "12", f: "12" }, { a: "4",  f: "11" }, { a: "12", f: "R"  }, { a: "B",  f: "8"  }, { a: "2",  f: "5"  },
+      { a: "1",  f: "4"  }, { a: "10", f: "11" }, { a: "5",  f: "R"  }, { a: "10", f: "8"  }, { a: "4",  f: "8"  },
+      { a: "7",  f: "2"  }, { a: "3",  f: "2"  }, { a: "B",  f: "2"  }, { a: "3",  f: "1"  }, { a: "5",  f: "1"  },
+      { a: "12", f: "4"  }, { a: "2",  f: "8"  }, { a: "8",  f: "4"  }, { a: "4",  f: "1"  }, { a: "8",  f: "R"  },
+      { a: "6",  f: "8"  }, { a: "8",  f: "8"  }, { a: "12", f: "6"  }, { a: "10", f: "2"  }, { a: "7",  f: "2"  },
+      { a: "12", f: "R"  }, { a: "8",  f: "5"  }, { a: "6",  f: "11" }, { a: "11", f: "11" }, { a: "2",  f: "2"  },
+      { a: "9",  f: "12" }, { a: "3",  f: "4"  }, { a: "6",  f: "11" }, { a: "2",  f: "7"  }, { a: "11", f: "9"  }
+    ];
+
+    const FECHA_BASE = new Date(2026, 9, 1);
+
+    function obtenerDatosDia(ano, mes, dia) {
+      const fechaActual = new Date(ano, mes - 1, dia);
+      const difTiempo = fechaActual - FECHA_BASE;
+      const difDias = Math.floor(difTiempo / (1000 * 60 * 60 * 24));
+      
+      let indice = difDias % 50;
+      if (indice < 0) indice += 50;
+      
+      return SECUENCIA_50_DIAS[indice];
+    }
+
+    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+    // Asignar texto de Mes y Año
+    const nombreMes = nombresMeses[MES_CONFIG - 1];
+    document.getElementById("titulo-mes-borde").textContent = nombreMes;
+    document.getElementById("titulo-mes-relleno").textContent = nombreMes;
+    document.getElementById("titulo-ano").textContent = ANO_CONFIG;
+
+    // Asignar los íconos simétricos según el mes
+    const iconoClase = ICONOS_MES[MES_CONFIG] || "ti-sun";
+    document.getElementById("icono-ano-izq").className = `ti ${iconoClase}`;
+    document.getElementById("icono-ano-der").className = `ti ${iconoClase}`;
+
+    function generarCalendario() {
+      const contenedor = document.getElementById("calendario");
+      contenedor.innerHTML = "";
+
+      diasSemana.forEach(dia => {
+        const header = document.createElement("div");
+        header.className = "header-dias";
+        header.textContent = dia;
+        contenedor.appendChild(header);
+      });
+
+      const primerDiaMes = new Date(ANO_CONFIG, MES_CONFIG - 1, 1);
+      const totalDias = new Date(ANO_CONFIG, MES_CONFIG, 0).getDate();
+      
+      let offset = primerDiaMes.getDay() - 1;
+      if (offset === -1) offset = 6;
+
+      for (let i = 0; i < offset; i++) {
+        const celdaVacia = document.createElement("div");
+        celdaVacia.className = "casilla-dia vacia";
+        contenedor.appendChild(celdaVacia);
+      }
+
+      const esMesActual = fechaAjustada.getFullYear() === ANO_CONFIG && (fechaAjustada.getMonth() + 1) === MES_CONFIG;
+
+      for (let dia = 1; dia <= totalDias; dia++) {
+        const celda = document.createElement("div");
+        celda.className = "casilla-dia";
+
+        if (esMesActual && fechaAjustada.getDate() === dia) {
+          celda.classList.add("hoy");
+        }
+
+        const infoDia = obtenerDatosDia(ANO_CONFIG, MES_CONFIG, dia);
+
+        const claveStorage = `cal_${ANO_CONFIG}_${MES_CONFIG}_dia_${dia}`;
+        const estadoGuardado = JSON.parse(localStorage.getItem(claveStorage)) || { check1: false, check2: false };
+
+        celda.innerHTML = `
+          <div class="header-casilla">
+            <div class="num-dia">${dia}</div>
+            <img src="${IMAGEN_POR_DEFECTO}" class="img-dia" alt="día ${dia}">
+          </div>
+          <div class="marcas-grid">
+            <div class="caja-btn ${estadoGuardado.check1 ? 'marcado' : ''}" id="btn1_${dia}">
+              ${infoDia.f}
+            </div>
+            <div class="caja-btn ${estadoGuardado.check2 ? 'marcado' : ''}" id="btn2_${dia}">
+              ${infoDia.a}
+            </div>
+          </div>
+        `;
+
+        const btn1 = celda.querySelector(`#btn1_${dia}`);
+        const btn2 = celda.querySelector(`#btn2_${dia}`);
+
+        btn1.addEventListener("click", () => {
+          estadoGuardado.check1 = !estadoGuardado.check1;
+          btn1.classList.toggle("marcado", estadoGuardado.check1);
+          localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
+        });
+
+        btn2.addEventListener("click", () => {
+          estadoGuardado.check2 = !estadoGuardado.check2;
+          btn2.classList.toggle("marcado", estadoGuardado.check2);
+          localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
+        });
+
+        contenedor.appendChild(celda);
+      }
+    }
+
+    generarCalendario();
+
+    // ==========================================
+    // 5. LÓGICA DEL EASTER EGG
+    // ==========================================
+    const btnEasterEgg = document.getElementById("btn-easter-egg");
+    const containerEasterEgg = document.getElementById("easter-egg");
+    const stickerImg = document.getElementById("sticker-img");
+
+    // Alternar visibilidad al pulsar en el nombre del mes
+    btnEasterEgg.addEventListener("click", () => {
+      containerEasterEgg.classList.toggle("activo");
+    });
+
+    // Ocultar al hacer clic sobre la imagen del sticker
+    stickerImg.addEventListener("click", () => {
+      containerEasterEgg.classList.remove("activo");
+    });
+  </script>
+</body>
+</html>

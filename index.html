@@ -110,7 +110,7 @@
     }
 
     .titulo-mes-borde {
-      font-size: 4rem;
+      font-size: clamp(2.2rem, 8vw, 4rem);
       font-weight: 700;
       color: var(--autumn-stroke);
       -webkit-text-stroke: 14px var(--autumn-stroke);
@@ -126,7 +126,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      font-size: 4rem;
+      font-size: clamp(2.2rem, 8vw, 4rem);
       font-weight: 700;
       text-transform: capitalize;
       letter-spacing: 2px;
@@ -300,13 +300,11 @@
       letter-spacing: 0.5px;
     }
 
-    /* ==========================================
-       EASTER EGG STICKER & BOCADILLO ESTILO CARTOON
-       ========================================== */
+    /* EASTER EGG STICKER & BOCADILLO ESTILO CARTOON */
     .easter-egg-container {
       position: fixed;
       bottom: -30px;
-      left: 20px;
+      left: 10px;
       z-index: 9999;
       display: flex;
       flex-direction: column;
@@ -379,7 +377,6 @@
       transform: scale(1.08) rotate(-3deg);
     }
 
-    /* Animación de entrada estilo Cartoon */
     @keyframes popCartoon {
       0% {
         opacity: 0;
@@ -391,6 +388,80 @@
       100% {
         opacity: 1;
         transform: scale(1) translateY(0) rotate(0deg);
+      }
+    }
+
+    /* ==========================================
+       ADAPTACIONES ESPECÍFICAS PARA MÓVIL
+       ========================================== */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px 5px;
+        margin: 0 auto;
+      }
+
+      .contenedor-principal {
+        padding: 12px 8px;
+        border-radius: 16px;
+      }
+
+      .titulo-mes-borde,
+      .titulo-mes-relleno {
+        -webkit-text-stroke: 8px var(--autumn-stroke);
+      }
+
+      .pildora-ano {
+        font-size: 0.95rem;
+        padding: 4px 16px;
+      }
+
+      .grid-calendario {
+        gap: 4px;
+      }
+
+      .header-dias {
+        padding: 6px 2px;
+        font-size: 13px;
+        border-radius: 8px;
+      }
+
+      .casilla-dia {
+        min-height: 85px;
+        padding: 4px 2px;
+        border-width: 1.5px;
+        border-radius: 8px;
+      }
+
+      .num-dia {
+        font-size: 16px;
+        margin-bottom: 2px;
+      }
+
+      .marcas-grid {
+        gap: 2px;
+        margin-top: 4px;
+      }
+
+      .caja-btn {
+        padding: 3px 1px;
+        font-size: 12px;
+        border-width: 1px;
+        border-radius: 5px;
+      }
+
+      .footer-info {
+        font-size: 0.8rem;
+        margin-top: 15px;
+      }
+
+      .sticker-img {
+        width: 130px;
+      }
+
+      .bocadillo-mensaje {
+        max-width: 170px;
+        font-size: 0.8rem;
+        padding: 8px 12px;
       }
     }
   </style>
@@ -438,7 +509,7 @@
     // 1. CONFIGURACIÓN MODO AUTOMÁTICO / MANUAL
     // ==========================================
     const MODO_AUTOMATICO = true; 
-    const MES_MANUAL = 12; 
+    const MES_MANUAL = 2; 
     const ANO_MANUAL = 2027; 
 
     function obtenerFechaAjustada() {
@@ -753,7 +824,6 @@
       12: "ti-christmas-tree",  // Diciembre
     };
 
-    // Aplicar estilo del mes seleccionado
     function aplicarEstiloMes(numMes) {
       const configuracionMes = PALETAS_MES[numMes];
       if (configuracionMes) {
@@ -795,7 +865,10 @@
     }
 
     const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+    
+    // Nombres cortos para pantallas reducidas
+    const esMovil = window.innerWidth <= 768;
+    const diasSemana = esMovil ? ["L", "M", "X", "J", "V", "S", "D"] : ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
     // Asignar texto de Mes y Año
     const nombreMes = nombresMeses[MES_CONFIG - 1];
@@ -882,6 +955,17 @@
 
     generarCalendario();
 
+    // Re-renderizar si la ventana cambia de tamaño (por orientación del móvil)
+    window.addEventListener('resize', () => {
+      const esMovilActual = window.innerWidth <= 768;
+      const nuevosDias = esMovilActual ? ["L", "M", "X", "J", "V", "S", "D"] : ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+      if (diasSemana[0] !== nuevosDias[0]) {
+        diasSemana.length = 0;
+        diasSemana.push(...nuevosDias);
+        generarCalendario();
+      }
+    });
+
     // ==========================================
     // 5. LÓGICA DEL EASTER EGG
     // ==========================================
@@ -889,12 +973,10 @@
     const containerEasterEgg = document.getElementById("easter-egg");
     const stickerImg = document.getElementById("sticker-img");
 
-    // Alternar visibilidad al pulsar en el nombre del mes
     btnEasterEgg.addEventListener("click", () => {
       containerEasterEgg.classList.toggle("activo");
     });
 
-    // Ocultar al hacer clic sobre la imagen del sticker
     stickerImg.addEventListener("click", () => {
       containerEasterEgg.classList.remove("activo");
     });

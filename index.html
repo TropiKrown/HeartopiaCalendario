@@ -182,7 +182,7 @@
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* ESTILOS EASTER EGG (STICKER ABAJO A LA IZQUIERDA Y BOCADILLO) */
+    /* ESTILOS EASTER EGG */
     .easter-egg-container {
       position: fixed;
       bottom: -30px;
@@ -205,7 +205,6 @@
       animation: popCartoon 0.5s ease-out;
     }
 
-    /* Bocadillo de texto */
     .bocadillo-mensaje {
       background: #ffffff;
       color: #222f47;
@@ -222,7 +221,6 @@
       text-align: left;
     }
 
-    /* Flecha interior del bocadillo (blanca) */
     .bocadillo-mensaje::after {
       content: '';
       position: absolute;
@@ -236,7 +234,6 @@
       z-index: 1;
     }
 
-    /* Flecha exterior del bocadillo (borde) */
     .bocadillo-mensaje::before {
       content: '';
       position: absolute;
@@ -250,7 +247,6 @@
       z-index: 0;
     }
 
-    /* Imagen del Sticker */
     .sticker-img {
       width: 180px;
       height: auto;
@@ -263,7 +259,6 @@
       transform: scale(1.08) rotate(-3deg);
     }
 
-    /* Animación estilo dibujo animado */
     @keyframes popCartoon {
       0% {
         opacity: 0;
@@ -590,32 +585,104 @@
       flex-shrink: 0;
     }
 
-    /* ADAPTACIÓN MÓVIL Y DISPOSITIVOS PEQUEÑOS */
+    /* ADAPTACIÓN MÓVIL Y DISPOSITIVOS PEQUEÑOS (AJUSTADO) */
     @media (max-width: 850px) {
-      body {
-        overflow-y: auto;
-        padding: 16px 0;
+      html, body {
+        overflow-y: auto !important;
+        height: auto !important;
       }
+
+      body {
+        padding: 12px 8px;
+        align-items: flex-start;
+      }
+
       .layout-global {
         flex-direction: column;
+        width: 100%;
+        max-width: 100%;
         height: auto;
         max-height: none;
+        gap: 12px;
       }
+
       .contenedor-principal {
+        width: 100%;
         height: auto;
-        min-height: 520px;
+        padding: 12px 8px;
       }
+
+      .grid-calendario {
+        grid-template-rows: auto repeat(var(--filas-mes, 5), minmax(65px, auto));
+        gap: 3px;
+      }
+
+      .header-dias {
+        font-size: 0.75rem;
+        padding: 4px 1px;
+      }
+
+      .casilla-dia {
+        padding: 2px;
+        min-height: 65px;
+      }
+
+      .num-dia {
+        font-size: 0.85rem;
+        top: 0px;
+        left: 2px;
+      }
+
+      .img-dia {
+        padding-top: 10px;
+      }
+
+      .marcas-grid {
+        gap: 2px;
+      }
+
+      .caja-btn {
+        font-size: 0.75rem;
+        padding: 1px;
+        min-height: 18px;
+      }
+
       .panel-dia-actual {
         width: 100%;
         height: auto;
+        padding: 12px;
+        gap: 12px;
       }
+
+      .bloque-central-hoy {
+        gap: 8px;
+      }
+
+      .contenido-panel-hoy {
+        padding: 8px;
+      }
+
+      .numero-gran-hoy {
+        font-size: 2.2rem;
+      }
+
+      .img-gran-hoy {
+        max-width: 80px;
+      }
+
       .sticker-img {
-        width: 130px;
+        width: 110px;
       }
+
       .bocadillo-mensaje {
-        max-width: 170px;
-        font-size: 0.8rem;
-        padding: 8px 12px;
+        max-width: 160px;
+        font-size: 0.75rem;
+        padding: 6px 10px;
+      }
+
+      .easter-egg-container {
+        bottom: 5px;
+        left: 5px;
       }
     }
   </style>
@@ -787,17 +854,14 @@
     document.getElementById("icono-ano-izq").className = `ti ${iconoClase}`;
     document.getElementById("icono-ano-der").className = `ti ${iconoClase}`;
 
-    /* LÓGICA DEL EASTER EGG (MOSTRAR/OCULTAR Y CERRAR AL HACER CLIC EN EL STICKER) */
     const btnTituloMes = document.getElementById("btn-easter-egg");
     const containerEasterEgg = document.getElementById("easter-egg");
     const stickerImg = document.getElementById("sticker-img");
 
-    // Muestra u oculta el easter egg al pulsar el título del mes
     btnTituloMes.addEventListener("click", () => {
       containerEasterEgg.classList.toggle("activo");
     });
 
-    // Cierra el conjunto al hacer clic en la imagen del sticker
     stickerImg.addEventListener("click", () => {
       containerEasterEgg.classList.remove("activo");
     });
@@ -817,70 +881,62 @@
       hoyBtn1.onclick = () => {
         estadoGuardado.check1 = !estadoGuardado.check1;
         hoyBtn1.classList.toggle("marcado", estadoGuardado.check1);
-        document.getElementById(`btn1_${diaNum}`).classList.toggle("marcado", estadoGuardado.check1);
+        const elBtn1 = document.getElementById(`btn1_${diaNum}`);
+        if(elBtn1) elBtn1.classList.toggle("marcado", estadoGuardado.check1);
         localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
       };
 
       hoyBtn2.onclick = () => {
         estadoGuardado.check2 = !estadoGuardado.check2;
         hoyBtn2.classList.toggle("marcado", estadoGuardado.check2);
-        document.getElementById(`btn2_${diaNum}`).classList.toggle("marcado", estadoGuardado.check2);
+        const elBtn2 = document.getElementById(`btn2_${diaNum}`);
+        if(elBtn2) elBtn2.classList.toggle("marcado", estadoGuardado.check2);
         localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
       };
     }
 
-    function generarCalendario() {
-      const contenedor = document.getElementById("calendario");
-      contenedor.innerHTML = "";
+    function renderizarCalendario() {
+      const calendarioEl = document.getElementById("calendario");
+      calendarioEl.innerHTML = "";
 
       diasSemana.forEach(dia => {
-        const header = document.createElement("div");
-        header.className = "header-dias";
-        header.textContent = dia;
-        contenedor.appendChild(header);
+        const div = document.createElement("div");
+        div.className = "header-dias";
+        div.textContent = dia;
+        calendarioEl.appendChild(div);
       });
 
-      const primerDiaMes = new Date(ANO_CONFIG, MES_CONFIG - 1, 1);
-      const totalDias = new Date(ANO_CONFIG, MES_CONFIG, 0).getDate();
-      
-      let offset = primerDiaMes.getDay() - 1;
-      if (offset === -1) offset = 6;
+      const primerDia = new Date(ANO_CONFIG, MES_CONFIG - 1, 1).getDay();
+      const diasEnMes = new Date(ANO_CONFIG, MES_CONFIG, 0).getDate();
+      const desfaseIndex = (primerDia === 0) ? 6 : primerDia - 1;
 
-      const totalCasillas = offset + totalDias;
-      const numFilas = Math.ceil(totalCasillas / 7);
-      
-      document.documentElement.style.setProperty('--filas-mes', numFilas);
+      const totalCasillas = desfaseIndex + diasEnMes;
+      const totalFilas = Math.ceil(totalCasillas / 7);
+      document.documentElement.style.setProperty('--filas-mes', totalFilas);
 
-      for (let i = 0; i < offset; i++) {
-        const celdaVacia = document.createElement("div");
-        celdaVacia.className = "casilla-dia vacia";
-        contenedor.appendChild(celdaVacia);
+      for (let i = 0; i < desfaseIndex; i++) {
+        const divVacio = document.createElement("div");
+        divVacio.className = "casilla-dia vacia";
+        calendarioEl.appendChild(divVacio);
       }
 
-      const esMesActual = fechaAjustada.getFullYear() === ANO_CONFIG && (fechaAjustada.getMonth() + 1) === MES_CONFIG;
-      const diaHoyNum = esMesActual ? fechaAjustada.getDate() : 1;
+      const esMesHoy = (fechaAjustada.getMonth() + 1) === MES_CONFIG && fechaAjustada.getFullYear() === ANO_CONFIG;
+      const diaActual = fechaAjustada.getDate();
 
-      for (let dia = 1; dia <= totalDias; dia++) {
-        const celda = document.createElement("div");
-        celda.className = "casilla-dia";
-
-        const esHoy = esMesActual && diaHoyNum === dia;
-        if (esHoy) {
-          celda.classList.add("hoy");
-        }
-
+      for (let dia = 1; dia <= diasEnMes; dia++) {
         const infoDia = obtenerDatosDia(ANO_CONFIG, MES_CONFIG, dia);
-        const claveStorage = `cal_${ANO_CONFIG}_${MES_CONFIG}_dia_${dia}`;
-        const estadoGuardado = JSON.parse(localStorage.getItem(claveStorage)) || { check1: false, check2: false };
+        const esHoy = esMesHoy && (dia === diaActual);
+        
+        const claveStorage = `cal_${ANO_CONFIG}_${MES_CONFIG}_${dia}`;
+        let estadoGuardado = JSON.parse(localStorage.getItem(claveStorage)) || { check1: false, check2: false };
 
-        if (esHoy) {
-          actualizarPanelHoy(dia, infoDia, claveStorage, estadoGuardado);
-        }
+        const casilla = document.createElement("div");
+        casilla.className = `casilla-dia ${esHoy ? 'hoy' : ''}`;
 
-        celda.innerHTML = `
+        casilla.innerHTML = `
           <div class="header-casilla">
-            <div class="num-dia">${dia}</div>
-            <img src="${IMAGEN_POR_DEFECTO}" class="img-dia" alt="día ${dia}">
+            <span class="num-dia">${dia}</span>
+            <img src="${IMAGEN_POR_DEFECTO}" class="img-dia" alt="Icono día">
           </div>
           <div class="marcas-grid">
             <div class="caja-btn ${estadoGuardado.check1 ? 'marcado' : ''}" id="btn1_${dia}">
@@ -892,28 +948,36 @@
           </div>
         `;
 
-        const btn1 = celda.querySelector(`#btn1_${dia}`);
-        const btn2 = celda.querySelector(`#btn2_${dia}`);
+        calendarioEl.appendChild(casilla);
 
-        btn1.addEventListener("click", () => {
+        const btn1 = casilla.querySelector(`#btn1_${dia}`);
+        const btn2 = casilla.querySelector(`#btn2_${dia}`);
+
+        btn1.onclick = () => {
           estadoGuardado.check1 = !estadoGuardado.check1;
           btn1.classList.toggle("marcado", estadoGuardado.check1);
-          if (esHoy) document.getElementById("hoy-btn1").classList.toggle("marcado", estadoGuardado.check1);
           localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
-        });
+          if (esHoy) {
+            document.getElementById("hoy-btn1").classList.toggle("marcado", estadoGuardado.check1);
+          }
+        };
 
-        btn2.addEventListener("click", () => {
+        btn2.onclick = () => {
           estadoGuardado.check2 = !estadoGuardado.check2;
           btn2.classList.toggle("marcado", estadoGuardado.check2);
-          if (esHoy) document.getElementById("hoy-btn2").classList.toggle("marcado", estadoGuardado.check2);
           localStorage.setItem(claveStorage, JSON.stringify(estadoGuardado));
-        });
+          if (esHoy) {
+            document.getElementById("hoy-btn2").classList.toggle("marcado", estadoGuardado.check2);
+          }
+        };
 
-        contenedor.appendChild(celda);
+        if (esHoy) {
+          actualizarPanelHoy(dia, infoDia, claveStorage, estadoGuardado);
+        }
       }
     }
 
-    generarCalendario();
+    renderizarCalendario();
   </script>
 </body>
 </html>
